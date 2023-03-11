@@ -2,7 +2,6 @@ package org.photonvision.vision.frame.provider;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.photonvision.common.logging.LogGroup;
@@ -12,9 +11,9 @@ import org.photonvision.vision.calibration.CameraCalibrationCoefficients;
 import org.photonvision.vision.frame.FrameProvider;
 import org.photonvision.vision.frame.FrameStaticProperties;
 import org.photonvision.vision.opencv.CVMat;
-import org.zeromq.ZMQ;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
+import org.zeromq.ZMQ;
 
 /**
  * A {@link FrameProvider} that will read and provide an image from a {@link java.nio.file.Path
@@ -22,7 +21,7 @@ import org.zeromq.ZContext;
  */
 public class ZmqFrameProvider extends CpuImageProcessor {
     public static final int MAX_FPS = 60;
-    
+
     private static final Logger logger = new Logger(ZmqFrameProvider.class, LogGroup.Camera);
 
     private final ZContext context;
@@ -38,11 +37,17 @@ public class ZmqFrameProvider extends CpuImageProcessor {
         this(address, topic, fov, maxFPS, null);
     }
 
-    public ZmqFrameProvider(String address, String topic, double fov, CameraCalibrationCoefficients calibration) {
+    public ZmqFrameProvider(
+            String address, String topic, double fov, CameraCalibrationCoefficients calibration) {
         this(address, topic, fov, MAX_FPS, calibration);
     }
 
-    public ZmqFrameProvider(String address, String topic, double fov, int maxFPS, CameraCalibrationCoefficients calibration) {
+    public ZmqFrameProvider(
+            String address,
+            String topic,
+            double fov,
+            int maxFPS,
+            CameraCalibrationCoefficients calibration) {
         this.address = address;
         this.topic = topic;
         this.millisDelay = 1000 / maxFPS;
@@ -51,9 +56,10 @@ public class ZmqFrameProvider extends CpuImageProcessor {
         this.socket = context.createSocket(SocketType.SUB);
         this.socket.connect(this.address);
         this.socket.subscribe(this.topic);
-        
+
         var sampleFrame = this.receiveFrame().getMat();
-        this.properties = new FrameStaticProperties(sampleFrame.width(), sampleFrame.height(), fov, calibration);
+        this.properties =
+                new FrameStaticProperties(sampleFrame.width(), sampleFrame.height(), fov, calibration);
     }
 
     private CVMat receiveFrame() {

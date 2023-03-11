@@ -58,9 +58,6 @@ import org.photonvision.vision.processes.VisionSource;
 import org.photonvision.vision.processes.VisionSourceManager;
 import org.photonvision.vision.target.TargetModel;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 public class Main {
     public static final int DEFAULT_WEBPORT = 5800;
 
@@ -77,10 +74,7 @@ public class Main {
         options.addOption("d", "debug", false, "Enable debug logging prints");
         options.addOption("h", "help", false, "Show this help text and exit");
         options.addOption(
-                "s",
-                "sim-mode",
-                true,
-                "Run in sim mode with a simulated ZMQ stream in place of cameras");
+                "s", "sim-mode", true, "Run in sim mode with a simulated ZMQ stream in place of cameras");
         options.addOption(
                 "t",
                 "test-mode",
@@ -126,19 +120,40 @@ public class Main {
         ConfigManager.getInstance().load();
 
         var aprilTag = new AprilTagPipelineSettings();
-        
+
         CameraConfiguration camConf = new CameraConfiguration("sim-camera", simModeUrl);
         camConf.FOV = 80; // Good guess?
 
         // Hardcoded calibration performed in photonvision.
         camConf.addCalibration(
-            new CameraCalibrationCoefficients(
-                new Size(848, 800),
-                new JsonMat(3, 3, new double[] { 1021.2912002409614, 0, 417.2110887660963, 0, 1026.934198818991, 384.0744520343236, 0, 0, 1 }),
-                new JsonMat(1, 5, new double[] { 0.06753595831687935, -0.4515291145626461, -0.0037180023023624144, 0.0011641168667318753, 0.8059800861441232 }),
-                new double[] { 0.3022509613442146 },
-                0.0826457500185341
-            ));
+                new CameraCalibrationCoefficients(
+                        new Size(848, 800),
+                        new JsonMat(
+                                3,
+                                3,
+                                new double[] {
+                                    1021.2912002409614,
+                                    0,
+                                    417.2110887660963,
+                                    0,
+                                    1026.934198818991,
+                                    384.0744520343236,
+                                    0,
+                                    0,
+                                    1
+                                }),
+                        new JsonMat(
+                                1,
+                                5,
+                                new double[] {
+                                    0.06753595831687935,
+                                    -0.4515291145626461,
+                                    -0.0037180023023624144,
+                                    0.0011641168667318753,
+                                    0.8059800861441232
+                                }),
+                        new double[] {0.3022509613442146},
+                        0.0826457500185341));
 
         var pipeSettings = new AprilTagPipelineSettings();
         pipeSettings.pipelineNickname = "sim-camera";

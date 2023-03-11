@@ -14,29 +14,27 @@ public class ZmqVisionSource extends VisionSource {
     private final ZmqFrameProvider frameProvider;
     private final ZmqSourceSettables settables;
 
-    public ZmqVisionSource(CameraConfiguration cameraConfiguration) throws IllegalArgumentException{
+    public ZmqVisionSource(CameraConfiguration cameraConfiguration) throws IllegalArgumentException {
         super(cameraConfiguration);
         var calibration =
-            cameraConfiguration.calibrations.size() > 0
-                ? cameraConfiguration.calibrations.get(0)
-                : null;
+                cameraConfiguration.calibrations.size() > 0
+                        ? cameraConfiguration.calibrations.get(0)
+                        : null;
         var lastSlashIndex = cameraConfiguration.path.lastIndexOf('/');
         if (lastSlashIndex == -1) {
             throw new IllegalArgumentException(
-                "ZMQ path is malformatted. Should be 'tcp://{address}/{topic}' but received'" + cameraConfiguration.path + "'"
-            );
+                    "ZMQ path is malformatted. Should be 'tcp://{address}/{topic}' but received'"
+                            + cameraConfiguration.path
+                            + "'");
         }
 
         var address = cameraConfiguration.path.substring(0, lastSlashIndex);
         var topic = cameraConfiguration.path.substring(lastSlashIndex + 1);
         this.frameProvider =
-            new ZmqFrameProvider(
-                address,
-                topic,
-                cameraConfiguration.FOV,
-                ZmqFrameProvider.MAX_FPS,
-                calibration);
-                this.settables = new ZmqSourceSettables(cameraConfiguration, frameProvider.get().frameStaticProperties);
+                new ZmqFrameProvider(
+                        address, topic, cameraConfiguration.FOV, ZmqFrameProvider.MAX_FPS, calibration);
+        this.settables =
+                new ZmqSourceSettables(cameraConfiguration, frameProvider.get().frameStaticProperties);
     }
 
     @Override
@@ -57,7 +55,8 @@ public class ZmqVisionSource extends VisionSource {
     private static class ZmqSourceSettables extends VisionSourceSettables {
         private final VideoMode videoMode;
 
-        ZmqSourceSettables(CameraConfiguration cameraConfiguration, FrameStaticProperties frameStaticProperties) {
+        ZmqSourceSettables(
+                CameraConfiguration cameraConfiguration, FrameStaticProperties frameStaticProperties) {
             super(cameraConfiguration);
             this.videoMode =
                     new VideoMode(
